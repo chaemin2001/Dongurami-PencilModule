@@ -35,7 +35,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     private var portraitConstraint = [NSLayoutConstraint]()
     
     // init 변수
-    var item = Initializers(leadingScale: 0.2, topScale: 0.2, widthScale: 0.65, heightScale: 0.6, directoryName: "문제집_id", fileName: "sample2", extention: "png")
+    var item = Initializers(leadingScale: 0.1, topScale: 0.1, widthScale: 0.6, heightScale: 2.0, directoryName: "문제집_id", fileName: "sample", extention: "png")
     private var longerWidth: CGFloat = 0
     private var shorterWidth: CGFloat = 0
     
@@ -104,9 +104,9 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     @objc private func rotated() {
         
         let landscapeFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * self.longerWidth, height: self.item.quizHeightScale * self.longerWidth)
-        let landscapeZoom = self.item.zoomScale * self.longerWidth
+        let landscapeZoom = self.longerWidth / self.shorterWidth
         let portraitFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * self.shorterWidth, height: self.item.quizHeightScale * self.shorterWidth)
-        let portraitZoom = self.item.zoomScale * self.shorterWidth
+        let portraitZoom = self.shorterWidth / self.longerWidth
         
         DispatchQueue.main.async() {
             
@@ -119,8 +119,8 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
                     constraint.isActive = true
                 }
                 self.quizView.frame = landscapeFrame
-                self.moduleView.setZoomScale(landscapeZoom, animated: false)
                 self.canvasView.setZoomScale(landscapeZoom, animated: false)
+                self.canvasView.minimumZoomScale = landscapeZoom
                 
             } else if UIDevice.current.orientation.isPortrait {
                 print("Portrait")
@@ -131,12 +131,11 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
                     constraint.isActive = true
                 }
                 self.quizView.frame = portraitFrame
-                self.moduleView.setZoomScale(portraitZoom, animated: false)
                 self.canvasView.setZoomScale(portraitZoom, animated: false)
+                self.canvasView.minimumZoomScale = 1.0
             }
             
             self.canvasView.setContentOffset(CGPoint.zero, animated: false)
-//            self.view.setNeedsUpdateConstraints()
             
             UIView.animate(withDuration: 0.3) {
                 self.view.layoutIfNeeded()
@@ -180,10 +179,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         moduleView.translatesAutoresizingMaskIntoConstraints = false
         
         let landscapeModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: self.item.canvasLeadingScale * longerWidth)
-        let landScapeModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * shorterWidth)
+        let landscapeModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * shorterWidth)
         let landscapeModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: self.item.canvasWidthScale * longerWidth)
         let landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * longerWidth)
-        landscapeConstraint += [landscapeModuleLeading, landScapeModuleTop, landscapeModuleWidth, landscapeModuleHeight]
+        landscapeConstraint += [landscapeModuleLeading, landscapeModuleTop, landscapeModuleWidth, landscapeModuleHeight]
         
         let portraitModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: self.item.canvasLeadingScale * shorterWidth)
         let portraitModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * longerWidth)
@@ -193,7 +192,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         
         if self.item.isLandscape {
             landscapeModuleLeading.isActive = true
-            landScapeModuleTop.isActive = true
+            landscapeModuleTop.isActive = true
             landscapeModuleWidth.isActive = true
             landscapeModuleHeight.isActive = true
         } else {
@@ -243,19 +242,22 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         stackView.addArrangedSubview(canvasView)
         
         canvasView.translatesAutoresizingMaskIntoConstraints = false
-//        canvasView.leadingAnchor.constraint(equalTo: moduleView.leadingAnchor).isActive = true
-//        canvasView.topAnchor.constraint(equalTo: moduleView.topAnchor).isActive = true
-//        canvasView.bottomAnchor.constraint(equalTo: moduleView.bottomAnchor).isActive = true
-//        canvasView.trailingAnchor.constraint(equalTo: moduleView.trailingAnchor).isActive = true
+        canvasView.leadingAnchor.constraint(equalTo: moduleView.leadingAnchor).isActive = true
+        canvasView.topAnchor.constraint(equalTo: moduleView.topAnchor).isActive = true
+        canvasView.bottomAnchor.constraint(equalTo: moduleView.bottomAnchor).isActive = true
+        canvasView.trailingAnchor.constraint(equalTo: moduleView.trailingAnchor).isActive = true
+
+//        canvasView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+//        canvasView.heightAnchor.constraint(equalTo: stackView.heightAnchor).isActive = true
 
         let landscapeCanvasWidth = canvasView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * longerWidth)
         let landscapeCanvasHeight = canvasView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * longerWidth)
-        landscapeConstraint += [landscapeCanvasWidth, landscapeCanvasHeight]
-        
+//        landscapeConstraint += [landscapeCanvasWidth, landscapeCanvasHeight]
+
         let portraitCanvasWidth = canvasView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * shorterWidth)
         let portraitCanvasHeight = canvasView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * shorterWidth)
-        portraitConstraint += [portraitCanvasWidth, portraitCanvasHeight]
-        
+//        portraitConstraint += [portraitCanvasWidth, portraitCanvasHeight]
+
         if self.item.isLandscape {
             landscapeCanvasWidth.isActive = true
             landscapeCanvasHeight.isActive = true
@@ -301,17 +303,17 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         
         quizView.accessibilityViewIsModal = true
         quizView.translatesAutoresizingMaskIntoConstraints = false
-        quizView.leadingAnchor.constraint(equalTo: canvasView.leadingAnchor).isActive = true
-        quizView.topAnchor.constraint(equalTo: canvasView.topAnchor).isActive = true
+//        quizView.heightAnchor.constraint(equalTo: stackView.heightAnchor).isActive = true
+//        quizView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
        
         let landscapeQuizWidth = quizView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * longerWidth)
         let landscapeQuizHeight = quizView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * longerWidth)
-        landscapeConstraint += [landscapeQuizWidth, landscapeQuizHeight]
+//        landscapeConstraint += [landscapeQuizWidth, landscapeQuizHeight]
 
         let portraitQuizWidth = quizView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * shorterWidth)
         let portraitQuizHeight = quizView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * shorterWidth)
-        portraitConstraint += [portraitQuizWidth, portraitQuizHeight]
-        
+//        portraitConstraint += [portraitQuizWidth, portraitQuizHeight]
+
         if self.item.isLandscape {
             landscapeQuizWidth.isActive = true
             landscapeQuizHeight.isActive = true
@@ -320,20 +322,20 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             portraitQuizHeight.isActive = true
         }
         
-        let landscapeFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * longerWidth, height: self.item.quizHeightScale * longerWidth)
-        let landscapeZoom = self.item.zoomScale * self.longerWidth
-        let portraitFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * longerWidth, height: self.item.quizHeightScale * shorterWidth)
-        let portraitZoom = self.item.zoomScale * self.shorterWidth
-        
-        if self.item.isLandscape {
-            quizView.frame = landscapeFrame
-            moduleView.setZoomScale(landscapeZoom, animated: false)
-            canvasView.setZoomScale(landscapeZoom, animated: false)
-        } else {
-            quizView.frame = portraitFrame
-            moduleView.setZoomScale(portraitZoom, animated: false)
-            canvasView.setZoomScale(portraitZoom, animated: false)
-        }
+//        let landscapeFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * longerWidth, height: self.item.quizHeightScale * longerWidth)
+//        let landscapeZoom = self.longerWidth / self.shorterWidth
+//        let portraitFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * longerWidth, height: self.item.quizHeightScale * shorterWidth)
+//        let portraitZoom = self.shorterWidth / self.longerWidth
+//
+//        if self.item.isLandscape {
+//            quizView.frame = landscapeFrame
+//            moduleView.setZoomScale(landscapeZoom, animated: false)
+//            canvasView.setZoomScale(landscapeZoom, animated: false)
+//        } else {
+//            quizView.frame = portraitFrame
+//            moduleView.setZoomScale(portraitZoom, animated: false)
+//            canvasView.setZoomScale(portraitZoom, animated: false)
+//        }
         
         canvasView.contentInset = UIEdgeInsets.zero
         canvasView.setContentOffset(CGPoint.zero, animated: true)

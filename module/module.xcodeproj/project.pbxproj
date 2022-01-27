@@ -7,26 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AF2C671E279933890073CA26 /* sample1.png in Resources */ = {isa = PBXBuildFile; fileRef = AF2C671D279933890073CA26 /* sample1.png */; };
-		AF2C6720279933920073CA26 /* sample2.png in Resources */ = {isa = PBXBuildFile; fileRef = AF2C671F279933920073CA26 /* sample2.png */; };
-		AF2C67222799339B0073CA26 /* sample3.png in Resources */ = {isa = PBXBuildFile; fileRef = AF2C67212799339B0073CA26 /* sample3.png */; };
-		AF2C6724279935310073CA26 /* sample4.png in Resources */ = {isa = PBXBuildFile; fileRef = AF2C6723279935310073CA26 /* sample4.png */; };
-		AF2C6726279935E20073CA26 /* sample5.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = AF2C6725279935E20073CA26 /* sample5.jpeg */; };
+		AF3CECCA27A313B000665105 /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = AF3CECC927A313B000665105 /* sample.png */; };
 		AF976D14278D1A0700314B43 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF976D13278D1A0700314B43 /* AppDelegate.swift */; };
 		AF976D16278D1A0700314B43 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF976D15278D1A0700314B43 /* SceneDelegate.swift */; };
 		AF976D18278D1A0700314B43 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF976D17278D1A0700314B43 /* ViewController.swift */; };
 		AF976D1B278D1A0700314B43 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF976D19278D1A0700314B43 /* Main.storyboard */; };
 		AF976D1D278D1A0700314B43 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF976D1C278D1A0700314B43 /* Assets.xcassets */; };
 		AF976D20278D1A0700314B43 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF976D1E278D1A0700314B43 /* LaunchScreen.storyboard */; };
-		AF9FECB2278FBDA8008524FF /* sample.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = AF9FECB1278FBDA8008524FF /* sample.jpeg */; };
+		AF9B06E327A287CA004061D3 /* sample2.png in Resources */ = {isa = PBXBuildFile; fileRef = AF9B06DE27A287CA004061D3 /* sample2.png */; };
+		AF9B06E427A287CA004061D3 /* sample4.png in Resources */ = {isa = PBXBuildFile; fileRef = AF9B06DF27A287CA004061D3 /* sample4.png */; };
+		AF9B06E527A287CA004061D3 /* sample1.png in Resources */ = {isa = PBXBuildFile; fileRef = AF9B06E027A287CA004061D3 /* sample1.png */; };
+		AF9B06E627A287CA004061D3 /* sample5.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = AF9B06E127A287CA004061D3 /* sample5.jpeg */; };
+		AF9B06E727A287CA004061D3 /* sample3.png in Resources */ = {isa = PBXBuildFile; fileRef = AF9B06E227A287CA004061D3 /* sample3.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AF2C671D279933890073CA26 /* sample1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample1.png; path = ../../../../sample1.png; sourceTree = "<group>"; };
-		AF2C671F279933920073CA26 /* sample2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample2.png; path = ../../../../sample2.png; sourceTree = "<group>"; };
-		AF2C67212799339B0073CA26 /* sample3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample3.png; path = ../../../../sample3.png; sourceTree = "<group>"; };
-		AF2C6723279935310073CA26 /* sample4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample4.png; path = ../../../../sample4.png; sourceTree = "<group>"; };
-		AF2C6725279935E20073CA26 /* sample5.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = sample5.jpeg; path = ../../../../sample5.jpeg; sourceTree = "<group>"; };
+		AF3CECC927A313B000665105 /* sample.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample.png; path = ../../../../Desktop/sample.png; sourceTree = "<group>"; };
 		AF976D10278D1A0700314B43 /* module.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = module.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF976D13278D1A0700314B43 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AF976D15278D1A0700314B43 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -35,7 +31,11 @@
 		AF976D1C278D1A0700314B43 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF976D1F278D1A0700314B43 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AF976D21278D1A0700314B43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AF9FECB1278FBDA8008524FF /* sample.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = sample.jpeg; path = ../../../../sample.jpeg; sourceTree = "<group>"; };
+		AF9B06DE27A287CA004061D3 /* sample2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample2.png; path = ../../../../Desktop/LOG/sample2.png; sourceTree = "<group>"; };
+		AF9B06DF27A287CA004061D3 /* sample4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample4.png; path = ../../../../Desktop/LOG/sample4.png; sourceTree = "<group>"; };
+		AF9B06E027A287CA004061D3 /* sample1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample1.png; path = ../../../../Desktop/LOG/sample1.png; sourceTree = "<group>"; };
+		AF9B06E127A287CA004061D3 /* sample5.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = sample5.jpeg; path = ../../../../Desktop/LOG/sample5.jpeg; sourceTree = "<group>"; };
+		AF9B06E227A287CA004061D3 /* sample3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample3.png; path = ../../../../Desktop/LOG/sample3.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,16 +71,16 @@
 				AF976D13278D1A0700314B43 /* AppDelegate.swift */,
 				AF976D15278D1A0700314B43 /* SceneDelegate.swift */,
 				AF976D17278D1A0700314B43 /* ViewController.swift */,
-				AF9FECB1278FBDA8008524FF /* sample.jpeg */,
-				AF2C671D279933890073CA26 /* sample1.png */,
-				AF2C671F279933920073CA26 /* sample2.png */,
-				AF2C67212799339B0073CA26 /* sample3.png */,
-				AF2C6723279935310073CA26 /* sample4.png */,
-				AF2C6725279935E20073CA26 /* sample5.jpeg */,
+				AF3CECC927A313B000665105 /* sample.png */,
+				AF9B06E027A287CA004061D3 /* sample1.png */,
+				AF9B06E227A287CA004061D3 /* sample3.png */,
+				AF9B06DF27A287CA004061D3 /* sample4.png */,
+				AF9B06E127A287CA004061D3 /* sample5.jpeg */,
 				AF976D19278D1A0700314B43 /* Main.storyboard */,
 				AF976D1C278D1A0700314B43 /* Assets.xcassets */,
 				AF976D1E278D1A0700314B43 /* LaunchScreen.storyboard */,
 				AF976D21278D1A0700314B43 /* Info.plist */,
+				AF9B06DE27A287CA004061D3 /* sample2.png */,
 			);
 			path = module;
 			sourceTree = "<group>";
@@ -144,13 +144,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF976D20278D1A0700314B43 /* LaunchScreen.storyboard in Resources */,
-				AF9FECB2278FBDA8008524FF /* sample.jpeg in Resources */,
-				AF2C67222799339B0073CA26 /* sample3.png in Resources */,
-				AF2C6720279933920073CA26 /* sample2.png in Resources */,
-				AF2C6724279935310073CA26 /* sample4.png in Resources */,
-				AF2C6726279935E20073CA26 /* sample5.jpeg in Resources */,
+				AF9B06E327A287CA004061D3 /* sample2.png in Resources */,
+				AF3CECCA27A313B000665105 /* sample.png in Resources */,
+				AF9B06E527A287CA004061D3 /* sample1.png in Resources */,
 				AF976D1D278D1A0700314B43 /* Assets.xcassets in Resources */,
-				AF2C671E279933890073CA26 /* sample1.png in Resources */,
+				AF9B06E727A287CA004061D3 /* sample3.png in Resources */,
+				AF9B06E427A287CA004061D3 /* sample4.png in Resources */,
+				AF9B06E627A287CA004061D3 /* sample5.jpeg in Resources */,
 				AF976D1B278D1A0700314B43 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
