@@ -300,14 +300,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         
         quizView.accessibilityViewIsModal = true
         quizView.translatesAutoresizingMaskIntoConstraints = false
-       
         let landscapeQuizWidth = quizView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * longerWidth)
         let landscapeQuizHeight = quizView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * longerWidth)
-//        landscapeConstraint += [landscapeQuizWidth, landscapeQuizHeight]
-
         let portraitQuizWidth = quizView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * shorterWidth)
         let portraitQuizHeight = quizView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * shorterWidth)
-//        portraitConstraint += [portraitQuizWidth, portraitQuizHeight]
 
         if self.item.isLandscape {
             landscapeQuizWidth.isActive = true
