@@ -43,7 +43,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     struct Initializers {
         let canvasLeadingScale: CGFloat
         let canvasTopScale: CGFloat
-        let canvasWidthScale: CGFloat
+        var canvasWidthScale: CGFloat
         var canvasHeightScale: CGFloat
         var isLandscape: Bool
         
@@ -52,8 +52,8 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         let fileName: String
         let extention: String
         let quizImage: UIImage
-        let quizWidthScale: CGFloat
-        let quizHeightScale: CGFloat
+        var quizWidthScale: CGFloat
+        var quizHeightScale: CGFloat
         let zoomScale: CGFloat
         
         init(leadingScale: CGFloat, topScale: CGFloat, widthScale: CGFloat, heightScale: CGFloat, directoryName: String, fileName: String, extention: String) {
@@ -69,14 +69,21 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             self.extention = extention
             self.canvasLeadingScale = leadingScale
             self.canvasTopScale = topScale
-            self.canvasWidthScale = widthScale
-            self.canvasHeightScale = heightScale * widthScale
             self.sampleQuizImage = Bundle.main.url(forResource: fileName, withExtension: extention)!
             let urlContents = try? Data(contentsOf: sampleQuizImage)
             self.quizImage = UIImage(data: urlContents!)!
-            self.quizWidthScale = widthScale
-            self.quizHeightScale = widthScale * quizImage.size.height / quizImage.size.width
             self.zoomScale = widthScale / quizImage.size.width
+            
+            if (leadingScale + widthScale >= 1.0) {
+                self.canvasWidthScale = 0.95 - leadingScale
+                self.quizWidthScale = 0.95 - leadingScale
+            } else {
+                self.canvasWidthScale = widthScale
+                self.quizWidthScale = widthScale
+            }
+            self.canvasHeightScale = heightScale * canvasWidthScale
+            self.quizHeightScale = canvasWidthScale * quizImage.size.height / quizImage.size.width
+            
             if (quizHeightScale < canvasHeightScale) {
                 self.canvasHeightScale = quizHeightScale
             }
@@ -91,6 +98,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         
         longerWidth = view.bounds.width > view.bounds.height ? view.bounds.width : view.bounds.height
         shorterWidth = view.bounds.width < view.bounds.height ? view.bounds.width : view.bounds.height
+        
         self.loadCanvasData(directoryName: self.item.directoryName)
         self.makeDir(directoryName: self.item.directoryName)
 
@@ -181,13 +189,19 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         let landscapeModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: self.item.canvasLeadingScale * longerWidth)
         let landscapeModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * shorterWidth)
         let landscapeModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: self.item.canvasWidthScale * longerWidth)
-        let landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * longerWidth)
+        var landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * longerWidth)
+        if (shorterWidth <= self.item.canvasHeightScale * longerWidth + self.item.canvasTopScale * shorterWidth) {
+            landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: shorterWidth * 0.95 - self.item.canvasTopScale * shorterWidth)
+        }
         landscapeConstraint += [landscapeModuleLeading, landscapeModuleTop, landscapeModuleWidth, landscapeModuleHeight]
         
         let portraitModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: self.item.canvasLeadingScale * shorterWidth)
         let portraitModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * longerWidth)
         let portraitModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: self.item.canvasWidthScale * shorterWidth)
-        let portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * shorterWidth)
+        var portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * shorterWidth)
+        if (longerWidth <= self.item.canvasHeightScale * shorterWidth + self.item.canvasTopScale * longerWidth) {
+            portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: longerWidth * 0.95 - self.item.canvasTopScale * longerWidth)
+        }
         portraitConstraint += [portraitModuleLeading, portraitModuleTop, portraitModuleWidth, portraitModuleHeight]
         
         if self.item.isLandscape {
@@ -246,25 +260,8 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         canvasView.topAnchor.constraint(equalTo: moduleView.topAnchor).isActive = true
         canvasView.bottomAnchor.constraint(equalTo: moduleView.bottomAnchor).isActive = true
         canvasView.trailingAnchor.constraint(equalTo: moduleView.trailingAnchor).isActive = true
-
-//        canvasView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-//        canvasView.heightAnchor.constraint(equalTo: stackView.heightAnchor).isActive = true
-
-        let landscapeCanvasWidth = canvasView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * longerWidth)
-        let landscapeCanvasHeight = canvasView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * longerWidth)
-//        landscapeConstraint += [landscapeCanvasWidth, landscapeCanvasHeight]
-
-        let portraitCanvasWidth = canvasView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * shorterWidth)
-        let portraitCanvasHeight = canvasView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * shorterWidth)
-//        portraitConstraint += [portraitCanvasWidth, portraitCanvasHeight]
-
-        if self.item.isLandscape {
-            landscapeCanvasWidth.isActive = true
-            landscapeCanvasHeight.isActive = true
-        } else {
-            portraitCanvasWidth.isActive = true
-            portraitCanvasHeight.isActive = true
-        }
+        canvasView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+        canvasView.heightAnchor.constraint(equalTo: stackView.heightAnchor).isActive = true
         
         canvasView.backgroundColor = .clear
         canvasView.bouncesZoom = false
@@ -303,8 +300,6 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         
         quizView.accessibilityViewIsModal = true
         quizView.translatesAutoresizingMaskIntoConstraints = false
-//        quizView.heightAnchor.constraint(equalTo: stackView.heightAnchor).isActive = true
-//        quizView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
        
         let landscapeQuizWidth = quizView.widthAnchor.constraint(equalToConstant: self.item.quizWidthScale * longerWidth)
         let landscapeQuizHeight = quizView.heightAnchor.constraint(equalToConstant: self.item.quizHeightScale * longerWidth)
@@ -321,21 +316,6 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             portraitQuizWidth.isActive = true
             portraitQuizHeight.isActive = true
         }
-        
-//        let landscapeFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * longerWidth, height: self.item.quizHeightScale * longerWidth)
-//        let landscapeZoom = self.longerWidth / self.shorterWidth
-//        let portraitFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * longerWidth, height: self.item.quizHeightScale * shorterWidth)
-//        let portraitZoom = self.shorterWidth / self.longerWidth
-//
-//        if self.item.isLandscape {
-//            quizView.frame = landscapeFrame
-//            moduleView.setZoomScale(landscapeZoom, animated: false)
-//            canvasView.setZoomScale(landscapeZoom, animated: false)
-//        } else {
-//            quizView.frame = portraitFrame
-//            moduleView.setZoomScale(portraitZoom, animated: false)
-//            canvasView.setZoomScale(portraitZoom, animated: false)
-//        }
         
         canvasView.contentInset = UIEdgeInsets.zero
         canvasView.setContentOffset(CGPoint.zero, animated: true)
