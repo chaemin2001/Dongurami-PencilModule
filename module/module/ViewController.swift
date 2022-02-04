@@ -100,7 +100,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         shorterWidth = view.bounds.width < view.bounds.height ? view.bounds.width : view.bounds.height
         
         self.loadCanvasData(directoryName: self.item.directoryName)
-        self.makeDir(directoryName: self.item.directoryName)
+        self.makeDir()
 
         self.view.addSubview(baseView)
         setUIView()
@@ -325,10 +325,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         if getCanvas.drawing.dataRepresentation().count > 50 {
             do { let encodedData: Data = try NSKeyedArchiver.archivedData(withRootObject: getCanvas.drawing, requiringSecureCoding: false)
                 let fileManager = FileManager.default
-                let documentsURL = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+                let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
                 let directoryURL = documentsURL.appendingPathComponent(self.item.directoryName, isDirectory: true)
                 let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
-                let fileURL = pencilDirURL.appendingPathComponent(self.item.fileName, isDirectory: true)
+                let fileURL = pencilDirURL.appendingPathComponent(self.item.fileName + ".drawing", isDirectory: true)
                 do {
                     try encodedData.write(to: fileURL)
                 } catch let error {
@@ -340,13 +340,14 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             }
         }
     }
+
     
     // 캔버스데이터 불러오기
     private func loadCanvasData(directoryName: String) {
         let getCanvas = self.canvasView
         var planDraw = Data()
         let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .desktopDirectory, in: .userDomainMask)[0]
+        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let directoryURL = documentsURL.appendingPathComponent(directoryName, isDirectory: true)
         let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
         let filePath = pencilDirURL.appendingPathComponent(self.item.fileName, isDirectory: true)
@@ -367,10 +368,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     }
     
     // 디렉토리 만들기
-    private func makeDir(directoryName: String) {
+    private func makeDir() {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let directoryURL = documentsURL.appendingPathComponent(directoryName, isDirectory: true)
+        let directoryURL = documentsURL.appendingPathComponent(self.item.directoryName, isDirectory: true)
         do {
             try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: nil)
         } catch let error {
@@ -384,7 +385,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             print(error.localizedDescription)
         }
         
-        let filePath = pencilDirURL.appendingPathComponent(self.item.fileName, isDirectory: true)
+        let filePath = pencilDirURL.appendingPathComponent(self.item.fileName + ".drawing", isDirectory: true)
         do {
             try fileManager.createDirectory(at: filePath, withIntermediateDirectories: false, attributes: nil)
         } catch let error {
