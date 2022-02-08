@@ -14,13 +14,15 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     
     // 필요한 상수, 변수
     private let baseView = UIView()
-    private var moduleView: ModuleScrollView!
+    private var moduleViews = [ModuleScrollView]()
+    private var toolPicker = PKToolPicker()
     private var saveBtn = UIButton()
     private var landscapeConstraint = [NSLayoutConstraint]()
     private var portraitConstraint = [NSLayoutConstraint]()
     
     // init 변수
-    var item = Initializers(leadingScale: 0.1, topScale: 0.1, widthScale: 0.6, heightScale: 2.0, directoryName: "문제집_id", fileName: "sample", extention: "png")
+    var item1 = Initializers(leadingScale: 0.05, topScale: 0.1, widthScale: 0.4, heightScale: 2.0, directoryName: "문제집_1", fileName: "sample", extention: "png")
+    var item2 = Initializers(leadingScale: 0.4, topScale: 0.2, widthScale: 0.3, heightScale: 3.0, directoryName: "문제집_2", fileName: "sample", extention: "png")
     private var longerWidth: CGFloat = 0
     private var shorterWidth: CGFloat = 0
     
@@ -32,9 +34,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         longerWidth = view.bounds.width > view.bounds.height ? view.bounds.width : view.bounds.height
         shorterWidth = view.bounds.width < view.bounds.height ? view.bounds.width : view.bounds.height
         let initialFrame = CGRect(x:0, y:0, width: 0, height: 0)
-        moduleView = ModuleScrollView(longerWidth: longerWidth, shorterWidth: shorterWidth, initializers: item, frame: initialFrame)
+        moduleViews += [ModuleScrollView(longerWidth: longerWidth, shorterWidth: shorterWidth, initializers: item1, toolPicker: toolPicker, frame: initialFrame)]
+        moduleViews += [ModuleScrollView(longerWidth: longerWidth, shorterWidth: shorterWidth, initializers: item2, toolPicker: toolPicker, frame: initialFrame)]
         
-        moduleView.loadCanvasData(directoryName: self.item.directoryName)
+//        moduleView1.loadCanvasData(directoryName: self.item1.directoryName)
         self.makeDir()
 
         self.view.addSubview(baseView)
@@ -46,11 +49,6 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     // 화면 회전 시 호출
     @objc private func rotated() {
         
-        let landscapeFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * self.longerWidth, height: self.item.quizHeightScale * self.longerWidth)
-        let landscapeZoom = self.longerWidth / self.shorterWidth
-        let portraitFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * self.shorterWidth, height: self.item.quizHeightScale * self.shorterWidth)
-        let portraitZoom = self.shorterWidth / self.longerWidth
-        
         DispatchQueue.main.async() {
             
             if UIDevice.current.orientation.isLandscape {
@@ -61,7 +59,9 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
                 for constraint in self.landscapeConstraint {
                     constraint.isActive = true
                 }
-                self.moduleView.setLandscape(frame: landscapeFrame, zoom: landscapeZoom)
+                for moduleView in self.moduleViews {
+                    moduleView.setLandscape()
+                }
                 
             } else if UIDevice.current.orientation.isPortrait {
                 print("Portrait")
@@ -71,7 +71,9 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
                 for constraint in self.portraitConstraint {
                     constraint.isActive = true
                 }
-                self.moduleView.setPortrait(frame: portraitFrame, zoom: portraitZoom)
+                for moduleView in self.moduleViews {
+                    moduleView.setPortrait()
+                }
             }
             
             UIView.animate(withDuration: 0.3) {
@@ -104,7 +106,9 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         saveBtn.titleLabel?.font = .systemFont(ofSize: 12)
         saveBtn.backgroundColor = .white
         saveBtn.layer.cornerRadius = 10
-        saveBtn.addTarget(self, action: #selector(moduleView.saveDrawing), for: .touchUpInside)
+        for moduleView in moduleViews {
+            saveBtn.addTarget(self, action: #selector(moduleView.saveDrawing), for: .touchUpInside)
+        }
         
         setModuleView()
     }
@@ -112,53 +116,61 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     // 모듈뷰 설정
     private func setModuleView() {
         
-        baseView.addSubview(moduleView)
-        moduleView.translatesAutoresizingMaskIntoConstraints = false
+        toolPicker.addObserver(moduleViews[0].canvasView)
+        toolPicker.setVisible(true, forFirstResponder: moduleViews[0].canvasView)
+        moduleViews[0].canvasView.becomeFirstResponder()
         
-        let landscapeModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: self.item.canvasLeadingScale * longerWidth)
-        let landscapeModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * shorterWidth)
-        let landscapeModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: self.item.canvasWidthScale * longerWidth)
-        var landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * longerWidth)
-        if (shorterWidth <= self.item.canvasHeightScale * longerWidth + self.item.canvasTopScale * shorterWidth) {
-            landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: shorterWidth * 0.95 - self.item.canvasTopScale * shorterWidth)
-        }
-        landscapeConstraint += [landscapeModuleLeading, landscapeModuleTop, landscapeModuleWidth, landscapeModuleHeight]
-        
-        let portraitModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: self.item.canvasLeadingScale * shorterWidth)
-        let portraitModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: self.item.canvasTopScale * longerWidth)
-        let portraitModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: self.item.canvasWidthScale * shorterWidth)
-        var portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: self.item.canvasHeightScale * shorterWidth)
-        if (longerWidth <= self.item.canvasHeightScale * shorterWidth + self.item.canvasTopScale * longerWidth) {
-            portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: longerWidth * 0.95 - self.item.canvasTopScale * longerWidth)
-        }
-        portraitConstraint += [portraitModuleLeading, portraitModuleTop, portraitModuleWidth, portraitModuleHeight]
-        
-        if self.item.isLandscape {
-            landscapeModuleLeading.isActive = true
-            landscapeModuleTop.isActive = true
-            landscapeModuleWidth.isActive = true
-            landscapeModuleHeight.isActive = true
-        } else {
-            portraitModuleLeading.isActive = true
-            portraitModuleTop.isActive = true
-            portraitModuleWidth.isActive = true
-            portraitModuleHeight.isActive = true
-        }
+        for moduleView in moduleViews {
+            
+            baseView.addSubview(moduleView)
+            moduleView.translatesAutoresizingMaskIntoConstraints = false
+            
+            let landscapeModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: moduleView.item.canvasLeadingScale * longerWidth)
+            let landscapeModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: moduleView.item.canvasTopScale * shorterWidth)
+            let landscapeModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: moduleView.item.canvasWidthScale * longerWidth)
+            var landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: moduleView.item.canvasHeightScale * longerWidth)
+            if (shorterWidth <= moduleView.item.canvasHeightScale * longerWidth + moduleView.item.canvasTopScale * shorterWidth) {
+                landscapeModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: shorterWidth * 0.95 - moduleView.item.canvasTopScale * shorterWidth)
+            }
+            landscapeConstraint += [landscapeModuleLeading, landscapeModuleTop, landscapeModuleWidth, landscapeModuleHeight]
+            
+            let portraitModuleLeading = moduleView.leadingAnchor.constraint(equalTo: baseView.leadingAnchor, constant: moduleView.item.canvasLeadingScale * shorterWidth)
+            let portraitModuleTop = moduleView.topAnchor.constraint(equalTo: baseView.topAnchor, constant: moduleView.item.canvasTopScale * longerWidth)
+            let portraitModuleWidth = moduleView.widthAnchor.constraint(equalToConstant: moduleView.item.canvasWidthScale * shorterWidth)
+            var portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: moduleView.item.canvasHeightScale * shorterWidth)
+            if (longerWidth <= moduleView.item.canvasHeightScale * shorterWidth + moduleView.item.canvasTopScale * longerWidth) {
+                portraitModuleHeight = moduleView.heightAnchor.constraint(equalToConstant: longerWidth * 0.95 - moduleView.item.canvasTopScale * longerWidth)
+            }
+            portraitConstraint += [portraitModuleLeading, portraitModuleTop, portraitModuleWidth, portraitModuleHeight]
+            
+            if moduleView.item.isLandscape {
+                landscapeModuleLeading.isActive = true
+                landscapeModuleTop.isActive = true
+                landscapeModuleWidth.isActive = true
+                landscapeModuleHeight.isActive = true
+            } else {
+                portraitModuleLeading.isActive = true
+                portraitModuleTop.isActive = true
+                portraitModuleWidth.isActive = true
+                portraitModuleHeight.isActive = true
+            }
 
-        moduleView.maximumZoomScale = 3.0
-        moduleView.showsVerticalScrollIndicator = false
-        moduleView.showsHorizontalScrollIndicator = false
-        moduleView.backgroundColor = .white
-        moduleView.layer.cornerRadius = 10
-    
-        moduleView.setStackView()
+            moduleView.maximumZoomScale = 3.0
+            moduleView.showsVerticalScrollIndicator = false
+            moduleView.showsHorizontalScrollIndicator = false
+            moduleView.backgroundColor = .white
+            moduleView.layer.cornerRadius = 10
+        
+            moduleView.setStackView()
+            
+        }
     }
     
     // 디렉토리 만들기
     private func makeDir() {
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let directoryURL = documentsURL.appendingPathComponent(self.item.directoryName, isDirectory: true)
+        let directoryURL = documentsURL.appendingPathComponent(self.item1.directoryName, isDirectory: true)
         do {
             try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: nil)
         } catch let error {
@@ -172,7 +184,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             print(error.localizedDescription)
         }
         
-        let filePath = pencilDirURL.appendingPathComponent(self.item.fileName + ".drawing", isDirectory: true)
+        let filePath = pencilDirURL.appendingPathComponent(self.item1.fileName + ".drawing", isDirectory: true)
         do {
             try fileManager.createDirectory(at: filePath, withIntermediateDirectories: false, attributes: nil)
         } catch let error {
@@ -183,18 +195,16 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     
     class ModuleScrollView: UIScrollView {
         
-        private var longerWidth: CGFloat
-        private var shorterWidth: CGFloat
-        private var item: Initializers
+        var longerWidth: CGFloat
+        var shorterWidth: CGFloat
+        var item: Initializers
+        var toolPicker: PKToolPicker
         
-//        required init?(coder: NSCoder) {
-//            print("init")
-//        }
-        
-        init (longerWidth: CGFloat, shorterWidth: CGFloat, initializers: Initializers, frame: CGRect) {
+        init (longerWidth: CGFloat, shorterWidth: CGFloat, initializers: Initializers, toolPicker: PKToolPicker, frame: CGRect) {
             self.longerWidth = longerWidth
             self.shorterWidth = shorterWidth
             self.item = initializers
+            self.toolPicker = toolPicker
             super.init(frame: frame)
         }
         
@@ -202,16 +212,17 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             fatalError("init(coder:) has not been implemented")
         }
         
-        
         private let stackView = UIStackView()
-        private let canvasView: PKCanvasView = PKCanvasView()
+        let canvasView: PKCanvasView = PKCanvasView()
         private let quizView: UIImageView = UIImageView()
-        private var toolPicker: PKToolPicker!
         private var drawing = PKDrawing()
         private var landscapeConstraint = [NSLayoutConstraint]()
         private var portraitConstraint = [NSLayoutConstraint]()
         
-        func setLandscape(frame: CGRect, zoom: CGFloat) {
+        func setLandscape() {
+            
+            let landscapeFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * self.longerWidth, height: self.item.quizHeightScale * self.longerWidth)
+            let landscapeZoom = self.longerWidth / self.shorterWidth
             
             for constraint in self.portraitConstraint {
                 constraint.isActive = false
@@ -219,14 +230,17 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             for constraint in self.landscapeConstraint {
                 constraint.isActive = true
             }
-            self.quizView.frame = frame
-            self.canvasView.setZoomScale(zoom, animated: false)
-            self.canvasView.minimumZoomScale = zoom
+            self.quizView.frame = landscapeFrame
+            self.canvasView.setZoomScale(landscapeZoom, animated: false)
+            self.canvasView.minimumZoomScale = landscapeZoom
             self.canvasView.setContentOffset(CGPoint.zero, animated: false)
             
         }
         
-        func setPortrait(frame: CGRect, zoom: CGFloat) {
+        func setPortrait() {
+            
+            let portraitFrame = CGRect(x:0, y:0, width: self.item.quizWidthScale * self.shorterWidth, height: self.item.quizHeightScale * self.shorterWidth)
+            let portraitZoom = self.shorterWidth / self.longerWidth
             
             for constraint in self.landscapeConstraint {
                 constraint.isActive = false
@@ -234,8 +248,8 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             for constraint in self.portraitConstraint {
                 constraint.isActive = true
             }
-            self.quizView.frame = frame
-            self.canvasView.setZoomScale(zoom, animated: false)
+            self.quizView.frame = portraitFrame
+            self.canvasView.setZoomScale(portraitZoom, animated: false)
             self.canvasView.minimumZoomScale = 1.0
             self.canvasView.setContentOffset(CGPoint.zero, animated: false)
             
@@ -296,10 +310,9 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         // 펜슬 설정
         private func setToolkit() {
             
-            toolPicker = PKToolPicker()
             toolPicker.addObserver(canvasView)
             toolPicker.setVisible(true, forFirstResponder: canvasView)
-            canvasView.becomeFirstResponder()
+            self.canvasView.becomeFirstResponder()
             
         }
         
