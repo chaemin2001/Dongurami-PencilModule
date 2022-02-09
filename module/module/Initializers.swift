@@ -10,21 +10,22 @@ import PencilKit
 import Foundation
 
 // 데이터
-//class DataBase {
-//    enum DataBaseEnum: String {
-//        case prob1
-//    }
-//
-//    class func setValue(_ key : DataBaseEnum , value : Any?) {
-//        let userDefaults = UserDefaults.standard
-//        userDefaults.set(value, forKey: key.rawValue)
-//        userDefaults.synchronize()
-//    }
-//
-//    class func getData(_ key: DataBaseEnum) -> Data {
-//        return UserDefaults.standard.value(forKey: key.rawValue) as? Data ?? Data()
-//    }
-//}
+class DataBase {
+    enum DataBaseEnum: String {
+        case prob1
+        case prob2
+    }
+
+    class func setValue(_ key : DataBaseEnum , value : Any?) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(value, forKey: key.rawValue)
+        userDefaults.synchronize()
+    }
+
+    class func getData(_ key: DataBaseEnum) -> Data {
+        return UserDefaults.standard.value(forKey: key.rawValue) as? Data ?? Data()
+    }
+}
 
 struct Initializers {
     

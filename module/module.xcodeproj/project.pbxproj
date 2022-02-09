@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AF3CECCA27A313B000665105 /* sample.png in Resources */ = {isa = PBXBuildFile; fileRef = AF3CECC927A313B000665105 /* sample.png */; };
 		AF48B3FE27AD0D94008AE185 /* Initializers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48B3FD27AD0D94008AE185 /* Initializers.swift */; };
 		AF976D14278D1A0700314B43 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF976D13278D1A0700314B43 /* AppDelegate.swift */; };
 		AF976D16278D1A0700314B43 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF976D15278D1A0700314B43 /* SceneDelegate.swift */; };
@@ -15,10 +14,11 @@
 		AF976D1B278D1A0700314B43 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF976D19278D1A0700314B43 /* Main.storyboard */; };
 		AF976D1D278D1A0700314B43 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF976D1C278D1A0700314B43 /* Assets.xcassets */; };
 		AF976D20278D1A0700314B43 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF976D1E278D1A0700314B43 /* LaunchScreen.storyboard */; };
+		AFCB3C5B27B2720D00838B6E /* sample1.png in Resources */ = {isa = PBXBuildFile; fileRef = AFCB3C5A27B2720D00838B6E /* sample1.png */; };
+		AFCB3C5D27B2721100838B6E /* sample2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = AFCB3C5C27B2721100838B6E /* sample2.jpeg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AF3CECC927A313B000665105 /* sample.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample.png; path = ../../../../Desktop/sample.png; sourceTree = "<group>"; };
 		AF48B3FD27AD0D94008AE185 /* Initializers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initializers.swift; sourceTree = "<group>"; };
 		AF976D10278D1A0700314B43 /* module.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = module.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF976D13278D1A0700314B43 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -28,6 +28,8 @@
 		AF976D1C278D1A0700314B43 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF976D1F278D1A0700314B43 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AF976D21278D1A0700314B43 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AFCB3C5A27B2720D00838B6E /* sample1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sample1.png; path = ../../../../Desktop/sample1.png; sourceTree = "<group>"; };
+		AFCB3C5C27B2721100838B6E /* sample2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = sample2.jpeg; path = ../../../../Desktop/sample2.jpeg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,12 +65,13 @@
 				AF976D13278D1A0700314B43 /* AppDelegate.swift */,
 				AF976D15278D1A0700314B43 /* SceneDelegate.swift */,
 				AF976D17278D1A0700314B43 /* ViewController.swift */,
-				AF3CECC927A313B000665105 /* sample.png */,
 				AF976D19278D1A0700314B43 /* Main.storyboard */,
 				AF976D1C278D1A0700314B43 /* Assets.xcassets */,
 				AF976D1E278D1A0700314B43 /* LaunchScreen.storyboard */,
 				AF976D21278D1A0700314B43 /* Info.plist */,
 				AF48B3FD27AD0D94008AE185 /* Initializers.swift */,
+				AFCB3C5A27B2720D00838B6E /* sample1.png */,
+				AFCB3C5C27B2721100838B6E /* sample2.jpeg */,
 			);
 			path = module;
 			sourceTree = "<group>";
@@ -132,8 +135,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF976D20278D1A0700314B43 /* LaunchScreen.storyboard in Resources */,
-				AF3CECCA27A313B000665105 /* sample.png in Resources */,
+				AFCB3C5B27B2720D00838B6E /* sample1.png in Resources */,
 				AF976D1D278D1A0700314B43 /* Assets.xcassets in Resources */,
+				AFCB3C5D27B2721100838B6E /* sample2.jpeg in Resources */,
 				AF976D1B278D1A0700314B43 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
