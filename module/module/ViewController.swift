@@ -21,10 +21,12 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     private var portraitConstraint = [NSLayoutConstraint]()
     
     // init 변수
-    var item1 = Initializers(leadingScale: 0.05, topScale: 0.1, widthScale: 0.4, heightScale: 2.0, directoryName: "문제집_1", fileName: "sample", extention: "png")
-    var item2 = Initializers(leadingScale: 0.4, topScale: 0.2, widthScale: 0.3, heightScale: 3.0, directoryName: "문제집_2", fileName: "sample", extention: "png")
+    var item1 = Initializers(leadingScale: 0.05, topScale: 0.1, widthScale: 0.4, heightScale: 2.0, directoryName: "prob1", fileName: "sample1", extention: "png")
+    var item2 = Initializers(leadingScale: 0.4, topScale: 0.2, widthScale: 0.3, heightScale: 3.0, directoryName: "prob2", fileName: "sample2", extention: "jpeg")
     private var longerWidth: CGFloat = 0
     private var shorterWidth: CGFloat = 0
+    private var isFlat = false
+    private var previousOrientation = ""
     
     // 첫 설정: 회색 바탕 + 흰색 모듈
     override func viewDidLoad() {
@@ -36,12 +38,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         let initialFrame = CGRect(x:0, y:0, width: 0, height: 0)
         moduleViews += [ModuleScrollView(longerWidth: longerWidth, shorterWidth: shorterWidth, initializers: item1, toolPicker: toolPicker, frame: initialFrame)]
         moduleViews += [ModuleScrollView(longerWidth: longerWidth, shorterWidth: shorterWidth, initializers: item2, toolPicker: toolPicker, frame: initialFrame)]
-        
-//        moduleView1.loadCanvasData(directoryName: self.item1.directoryName)
-        self.makeDir()
 
         self.view.addSubview(baseView)
         setUIView()
+//        makeDir()
         
         NotificationCenter.default.addObserver(self, selector: #selector(rotated), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
@@ -53,27 +53,38 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             
             if UIDevice.current.orientation.isLandscape {
                 print("Landscape")
-                for constraint in self.portraitConstraint {
-                    constraint.isActive = false
+                if (!self.isFlat || self.previousOrientation == "Portrait") {
+                    for constraint in self.portraitConstraint {
+                        constraint.isActive = false
+                    }
+                    for constraint in self.landscapeConstraint {
+                        constraint.isActive = true
+                    }
+                    for moduleView in self.moduleViews {
+                        moduleView.setLandscape()
+                    }
                 }
-                for constraint in self.landscapeConstraint {
-                    constraint.isActive = true
-                }
-                for moduleView in self.moduleViews {
-                    moduleView.setLandscape()
-                }
+                self.isFlat = false
+                self.previousOrientation = "Landscape"
                 
             } else if UIDevice.current.orientation.isPortrait {
                 print("Portrait")
-                for constraint in self.landscapeConstraint {
-                    constraint.isActive = false
+                if (!self.isFlat || self.previousOrientation == "Landscape") {
+                    for constraint in self.landscapeConstraint {
+                        constraint.isActive = false
+                    }
+                    for constraint in self.portraitConstraint {
+                        constraint.isActive = true
+                    }
+                    for moduleView in self.moduleViews {
+                        moduleView.setPortrait()
+                    }
                 }
-                for constraint in self.portraitConstraint {
-                    constraint.isActive = true
-                }
-                for moduleView in self.moduleViews {
-                    moduleView.setPortrait()
-                }
+                self.isFlat = false
+                self.previousOrientation = "Portrait"
+            } else if UIDevice.current.orientation.isFlat {
+                print("Flat")
+                self.isFlat = true
             }
             
             UIView.animate(withDuration: 0.3) {
@@ -106,11 +117,34 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         saveBtn.titleLabel?.font = .systemFont(ofSize: 12)
         saveBtn.backgroundColor = .white
         saveBtn.layer.cornerRadius = 10
-        for moduleView in moduleViews {
-            saveBtn.addTarget(self, action: #selector(moduleView.saveDrawing), for: .touchUpInside)
-        }
+        saveBtn.addTarget(self, action: #selector(self.saveDrawing), for: .touchUpInside)
         
         setModuleView()
+    }
+    
+    // 캔버스뷰 저장
+    @objc func saveDrawing(sender: UIButton!) {
+        print("Save")
+        for moduleView in moduleViews {
+            let getCanvas = moduleView.canvasView
+            if getCanvas.drawing.dataRepresentation().count > 50 {
+                do { let encodedData: Data = try NSKeyedArchiver.archivedData(withRootObject: getCanvas.drawing, requiringSecureCoding: false)
+//                    let fileManager = FileManager.default
+//                    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                    let directoryURL = documentsURL.appendingPathComponent(moduleView.item.directoryName, isDirectory: true)
+//                    let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
+//                    let filePath = pencilDirURL.appendingPathComponent(moduleView.item.fileName+".data", isDirectory: true)
+//                    do {
+//                        try encodedData.write(to: filePath)
+//                        } catch {
+//                        print("Error", error)
+//                    }
+                    DataBase.setValue(.init(rawValue: moduleView.item.directoryName)!, value: encodedData)
+                } catch {
+                    print(error)
+                }
+            }
+        }
     }
     
     // 모듈뷰 설정
@@ -167,30 +201,32 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     }
     
     // 디렉토리 만들기
-    private func makeDir() {
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let directoryURL = documentsURL.appendingPathComponent(self.item1.directoryName, isDirectory: true)
-        do {
-            try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: nil)
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        
-        let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
-        do {
-            try fileManager.createDirectory(at: pencilDirURL, withIntermediateDirectories: false, attributes: nil)
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        
-        let filePath = pencilDirURL.appendingPathComponent(self.item1.fileName + ".drawing", isDirectory: true)
-        do {
-            try fileManager.createDirectory(at: filePath, withIntermediateDirectories: false, attributes: nil)
-        } catch let error {
-            print(error.localizedDescription)
-        }
-    }
+//    private func makeDir() {
+//        let fileManager = FileManager.default
+//        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//        for moduleView in moduleViews {
+//            let directoryURL = documentsURL.appendingPathComponent(moduleView.item.directoryName, isDirectory: true)
+//            do {
+//                try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: false, attributes: nil)
+//            } catch let error {
+//                print(error.localizedDescription)
+//            }
+//
+//            let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
+//            do {
+//                try fileManager.createDirectory(at: pencilDirURL, withIntermediateDirectories: false, attributes: nil)
+//            } catch let error {
+//                print(error.localizedDescription)
+//            }
+//
+//            let filePath = pencilDirURL.appendingPathComponent(moduleView.item.fileName+".data", isDirectory: true)
+//            do {
+//                try fileManager.createDirectory(at: filePath, withIntermediateDirectories: false, attributes: nil)
+//            } catch let error {
+//                print(error.localizedDescription)
+//            }
+//        }
+//    }
     
     
     class ModuleScrollView: UIScrollView {
@@ -314,6 +350,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             toolPicker.setVisible(true, forFirstResponder: canvasView)
             self.canvasView.becomeFirstResponder()
             
+            self.loadCanvasData(directoryName: self.item.directoryName)
         }
         
         // 퀴즈뷰 설정
@@ -346,46 +383,19 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             canvasView.setContentOffset(CGPoint.zero, animated: true)
             canvasView.maximumZoomScale = 3.0
         }
-        
-        // 캔버스뷰 저장
-        @objc func saveDrawing(sender: UIButton!) {
-            print("Save")
-            let getCanvas = self.canvasView
-            if getCanvas.drawing.dataRepresentation().count > 50 {
-                do { let encodedData: Data = try NSKeyedArchiver.archivedData(withRootObject: getCanvas.drawing, requiringSecureCoding: false)
-                    let fileManager = FileManager.default
-                    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-                    let directoryURL = documentsURL.appendingPathComponent(self.item.directoryName, isDirectory: true)
-                    let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
-                    let fileURL = pencilDirURL.appendingPathComponent(self.item.fileName + ".drawing", isDirectory: true)
-                    do {
-                        try encodedData.write(to: fileURL)
-                    } catch let error {
-                        print(error.localizedDescription)
-                    }
-    //                DataBase.setValue(.init(rawValue: "prob1")!, value: encodedData)
-                } catch {
-                    print(error)
-                }
-            }
-        }
 
         // 캔버스데이터 불러오기
         func loadCanvasData(directoryName: String) {
             let getCanvas = self.canvasView
             var planDraw = Data()
-            let fileManager = FileManager.default
-            let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let directoryURL = documentsURL.appendingPathComponent(directoryName, isDirectory: true)
-            let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
-            let filePath = pencilDirURL.appendingPathComponent(self.item.fileName, isDirectory: true)
+            planDraw = DataBase.getData((.init(rawValue: self.item.directoryName) ?? .prob1))
             do {
-                planDraw = try Data(contentsOf: filePath)
-            } catch let error {
-                print(error.localizedDescription)
-            }
-    //        planDraw = DataBase.getData((.init(rawValue: "prob1") ?? .prob1))
-            do {
+//                let fileManager = FileManager.default
+//                let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//                let directoryURL = documentsURL.appendingPathComponent(self.item.directoryName, isDirectory: true)
+//                let pencilDirURL = directoryURL.appendingPathComponent("p_pencil", isDirectory: true)
+//                let filePath = pencilDirURL.appendingPathComponent(self.item.fileName+".data", isDirectory: true)
+//                let getDraw = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(Data(contentsOf: filePath)) as? PKDrawing
                 let getDraw = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(planDraw) as? PKDrawing
                 DispatchQueue.main.async {
                     getCanvas.drawing = getDraw ?? PKDrawing()
@@ -394,6 +404,6 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             print(error)
             }
         }
+        
     }
-
 }
