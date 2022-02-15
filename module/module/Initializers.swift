@@ -11,19 +11,27 @@ import Foundation
 
 // 데이터
 class DataBase {
-    enum DataBaseEnum: String {
-        case prob1
-        case prob2
+    enum DataBaseEnum: String, CaseIterable {
+        case problem
+        case solution
+        func make(for id: String) -> String {
+            return self.rawValue + "_" + id
+        }
+    }
+    
+    let userDefaults: UserDefaults
+    init(userDefaults: UserDefaults = .standard) {
+        self.userDefaults = userDefaults
     }
 
-    class func setValue(_ key : DataBaseEnum , value : Any?) {
+    class func setValue(_ key : DataBaseEnum, value : Any?, id: String) {
         let userDefaults = UserDefaults.standard
-        userDefaults.set(value, forKey: key.rawValue)
+        userDefaults.set(value, forKey: key.make(for: id))
         userDefaults.synchronize()
     }
 
-    class func getData(_ key: DataBaseEnum) -> Data {
-        return UserDefaults.standard.value(forKey: key.rawValue) as? Data ?? Data()
+    class func getData(_ key: DataBaseEnum, id: String) -> Data {
+        return UserDefaults.standard.value(forKey: key.make(for: id)) as? Data ?? Data()
     }
 }
 
@@ -36,7 +44,8 @@ struct Initializers {
     var isLandscape: Bool
     
     let sampleQuizImage: URL
-    let directoryName: String
+    let saveCase: String
+    let id: String
     let fileName: String
     let extention: String
     let quizImage: UIImage
@@ -44,7 +53,7 @@ struct Initializers {
     var quizHeightScale: CGFloat
     let zoomScale: CGFloat
     
-    init(leadingScale: CGFloat, topScale: CGFloat, widthScale: CGFloat, heightScale: CGFloat, directoryName: String, fileName: String, extention: String) {
+    init(leadingScale: CGFloat, topScale: CGFloat, widthScale: CGFloat, heightScale: CGFloat, saveCase: String, id: String, fileName: String, extention: String) {
         
         if UIDevice.current.orientation.isLandscape {
             self.isLandscape = true
@@ -52,7 +61,8 @@ struct Initializers {
             self.isLandscape = false
         }
         
-        self.directoryName = directoryName
+        self.saveCase = saveCase
+        self.id = id
         self.fileName = fileName
         self.extention = extention
         self.canvasLeadingScale = leadingScale

@@ -21,8 +21,8 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
     private var portraitConstraint = [NSLayoutConstraint]()
     
     // init 변수
-    var item1 = Initializers(leadingScale: 0.05, topScale: 0.1, widthScale: 0.4, heightScale: 2.0, directoryName: "prob1", fileName: "sample1", extention: "png")
-    var item2 = Initializers(leadingScale: 0.4, topScale: 0.2, widthScale: 0.3, heightScale: 3.0, directoryName: "prob2", fileName: "sample2", extention: "jpeg")
+    var item1 = Initializers(leadingScale: 0.05, topScale: 0.1, widthScale: 0.4, heightScale: 2.0, saveCase: "problem", id: "1", fileName: "sample1", extention: "png")
+    var item2 = Initializers(leadingScale: 0.4, topScale: 0.2, widthScale: 0.3, heightScale: 3.0, saveCase: "problem", id: "2", fileName: "sample2", extention: "jpeg")
     private var longerWidth: CGFloat = 0
     private var shorterWidth: CGFloat = 0
     private var isFlat = false
@@ -139,7 +139,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
 //                        } catch {
 //                        print("Error", error)
 //                    }
-                    DataBase.setValue(.init(rawValue: moduleView.item.directoryName)!, value: encodedData)
+                    DataBase.setValue(.init(rawValue: moduleView.item.saveCase)!, value: encodedData, id: moduleView.item.id)
                 } catch {
                     print(error)
                 }
@@ -350,7 +350,7 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
             toolPicker.setVisible(true, forFirstResponder: canvasView)
             self.canvasView.becomeFirstResponder()
             
-            self.loadCanvasData(directoryName: self.item.directoryName)
+            self.loadCanvasData()
         }
         
         // 퀴즈뷰 설정
@@ -385,10 +385,10 @@ class ViewController: UIViewController, PKCanvasViewDelegate, PKToolPickerObserv
         }
 
         // 캔버스데이터 불러오기
-        func loadCanvasData(directoryName: String) {
+        func loadCanvasData() {
             let getCanvas = self.canvasView
             var planDraw = Data()
-            planDraw = DataBase.getData((.init(rawValue: self.item.directoryName) ?? .prob1))
+            planDraw = DataBase.getData((.init(rawValue: self.item.saveCase) ?? .problem), id: self.item.id)
             do {
 //                let fileManager = FileManager.default
 //                let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
